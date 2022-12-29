@@ -1,6 +1,10 @@
 from django.db import models
 import uuid
 
+from .assignments import (ADVERTISEMENT_TYPE_CHOICES, ADVERTISEMENT_SUB_TYPE_CHOICES, 
+                          BUILDING_TYPE_CHOICES, ADVERTISEMENT_VIP_TYPE_CHOICES, 
+                          )
+
 # Create your models here.
 
 class BaseModel(models.Model):
@@ -24,7 +28,7 @@ class Advertisements(BaseModel):
     
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, 
                                         null=True, help_text='AZN/m²')
-    
+    #decimal_places must be 14 min
     location_width = models.DecimalField(max_digits=10, decimal_places=7, blank=True, 
                                         null=True, help_text='Longitude')
     
