@@ -175,7 +175,7 @@ def get_id(url):
 def scrape_cost(url):
     
     #This function get cost data of item
-    #It returns dict usual in every case
+    #It returns dict usual in normal, but zero in error case
     
     page = requests.get(url)
     soup = BeautifulSoup(page.content,features='html.parser')
@@ -208,7 +208,13 @@ def scrape_cost(url):
             cost_dict['unit_price'] = float(numeric_unit_price)
             result = cost_dict
             
-    problem_list_id.append(result)
+        else:
+            problem_list_id.append(result)
+            result = 0
+            
+    else:
+        problem_list_id.append(result)
+        result = 0
 
     return result
 
@@ -341,16 +347,83 @@ def get_sub_type_adv(url):
         
         element = sub_type['Kateqoriya']
         result = result_dict[element]
+    
+    else:
+        problem_list_id.append(result)    
         
     return result
 
 #----------------------------------------------------------------------------------------------
+def get_have_govern_deed(url):
+    
+    #This function helps us to appoint existence of order(kupca) of home,house
+    #it return bool if everything is ok, none if there is not any data, and list if there are
+    #any error
+    
+    my_dict = scrape_base_data(url)
+    answer_dict = {'Var': True, 'yoxdur': False}
+    ending = url[22:]
+    result = [ending, "##BUG##", "There may be some unpredictable bugs"]
+    
+    if type(my_dict) == dict:
+        
+        if 'Çıxarış' in my_dict.keys():
+            deed_value = my_dict['Çıxarış']
+            result = answer_dict[deed_value]
+            
+        else:
+            result = None
+    else:
+        problem_list_id.append(result)
+        
+    return result
+#----------------------------------------------------------------------------------------------
+def get_mortgage_support(url):
+    
+    #This function helps us to appoint existence of order(kupca) of home,house
+    #it return bool if everything is ok, none if there is not any data, and list if there are
+    #any error
+    
+    my_dict = scrape_base_data(url)
+    answer_dict = {'Var': True, 'yoxdur': False}
+    ending = url[22:]
+    result = [ending, "##BUG##", "There may be some unpredictable bugs"]
+    
+    if type(my_dict) == dict:
+        
+        if 'İpoteka' in my_dict.keys():
+            mortgage_val = my_dict['İpoteka']
+            result = answer_dict[mortgage_val]
+            
+        else:
+            result = None
+    else:
+        problem_list_id.append(result)
+            
+    return result
 
 #----------------------------------------------------------------------------------------------
-
-
-#----------------------------------------------------------------------------------------------
-
+def get_stage_datas(url):
+    
+    #This function get 2 datas about stage building. First building general stage
+    #Second is the house stage
+    #It returns list always 
+    
+    my_dict = scrape_base_data(url)
+    ending = url[22:]
+    result = [ending, "##BUG##", "There may be some unpredictable bugs"]
+    stage_list = []
+    if type(my_dict) == dict:
+        
+        if 'Mərtəbə'  in my_dict.keys():
+            stage_list = [int(i) for i in my_dict['Mərtəbə'] if i.isdigit()==True]
+        else:
+            stage_list = [None,None]
+    else:
+        problem_list_id.append(result)
+        stage_list = [0,0]
+        
+    return stage_list           
 
 #----------------------------------------------------------------------------------------------
 

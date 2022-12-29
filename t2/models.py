@@ -39,12 +39,12 @@ class Advertisements(BaseModel):
     
     type = models.BigIntegerField(choices=ADVERTISEMENT_TYPE_CHOICES)
     sub_type = models.BigIntegerField(choices=ADVERTISEMENT_SUB_TYPE_CHOICES)
-    #have_government_deed = models.BooleanField(blank=True, null=True)
-    #have_mortgage_support = models.BooleanField(blank=True, null=True)
-    #building_stage_height = models.BigIntegerField(blank=True, null=True)
-    #stage = models.BigIntegerField(blank=True, null=True)
-    #description = models.TextField(blank=True, null=True)
-    #view_count = models.BigIntegerField()
+    have_government_deed = models.BooleanField(blank=True, null=True)
+    have_mortgage_support = models.BooleanField(blank=True, null=True)
+    building_stage_height = models.BigIntegerField(blank=True, null=True)
+    stage = models.BigIntegerField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    view_count = models.BigIntegerField()
 
     def __str__(self):
         return self.name

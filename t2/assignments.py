@@ -2,6 +2,7 @@ ADVERTISEMENT_TYPE_CHOICES = (
   (1, 'monthly rent'),
   (2, 'daily rent'),
   (3, 'sale'),
+  (10, '##BUG##')
 )
 
 ADVERTISEMENT_SUB_TYPE_CHOICES = (
@@ -14,8 +15,8 @@ ADVERTISEMENT_SUB_TYPE_CHOICES = (
   (7, 'object building'),
   (8, 'land'),
   (9, 'another'),
+  (10, '##BUG##'),
 
-  
 )
 
 BUILDING_TYPE_CHOICES = (
@@ -23,6 +24,7 @@ BUILDING_TYPE_CHOICES = (
   (2, 'old constructed building'),
   (3, 'business center'),
   (4, 'other'),
+  (10, '##BUG##')
 )
 
 ADVERTISEMENT_VIP_TYPE_CHOICES = (
@@ -30,4 +32,5 @@ ADVERTISEMENT_VIP_TYPE_CHOICES = (
   (2, 'upper'),
   (3, 'vip'),
   (4, 'premium'),
+  (10, '##BUG##')
 )
