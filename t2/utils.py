@@ -39,11 +39,11 @@ def test_parce_conditions(url):
 
     #testing parce conditions
     if len(test_h1) == 1 and str(test_h1)[:19] == "[<h1>Tapılmadı</h1>":
-        result = {ending:{"##BUG##":"Bu elan tapılmadı"}}
+        result = [ending, "##BUG##", "Bu elan tapılmadı"]
         deleted_or_old_list_id.append(result)
         
     elif len(test_p) == 1 and str(test_p)[:55] == '[<p class="flash" id="alert">Bu elanın müddəti başa çat':
-        result = {ending:{"##BUG##":"Bu elanın vaxtı bitmiş və ya silinmişdir"}}
+        result = [ending, "##BUG##", "Bu elanın vaxtı bitmiş və ya silinmişdir"]
         deleted_or_old_list_id.append(result)
         
     return result
@@ -77,7 +77,7 @@ def scrape_base_data(url):
                 my_list.append(y)
                 result.update({y[0]:y[1]})
     else:
-        result = {ending:{"##BUG##":"class=parameters atributlu table tegi tapılmadı"}}
+        result = [ending, "##BUG##", "class=parameters atributlu table tegi tapılmadı"]
             
     return result
 
@@ -86,15 +86,20 @@ def scrape_base_data(url):
 def scrape_land_area(url):
     
     #This function helps us to get value of land's area which values have been showed in 'sot'
-    #It returns float normally, else zero
+    #It returns float normally,  None if there is not any data, and 0 if there are any problem
     
     my_dict = scrape_base_data(url)
     result = 0
-    my_list = [i for i in my_dict.values() if i.endswith('sot')]
     
-    if len(my_list)>0:
-        result = float(my_list[0].replace('sot','').replace(' ',''))
+    if type(my_dict)==dict:
         
+        my_list = [i for i in my_dict.values() if i.endswith('sot')]
+
+        if len(my_list)>0:
+            result = float(my_list[0].replace('sot','').replace(' ',''))
+        else:
+            result = None
+            
     return result
 
 #----------------------------------------------------------------------------------------------
@@ -102,15 +107,18 @@ def scrape_land_area(url):
 def scrape_area(url):
     
     #This function helps us to get value of building's area which values have been showed in 'm²'
-    #It returns float normally, else zero
+    #It returns float normally, None if there is not any data, and zero if there are any problem
     
     my_dict = scrape_base_data(url)
     result = 0
-    my_list = [i for i in my_dict.values() if i.endswith('m²')]
     
-    if len(my_list) > 0:
-        result = float(my_list[0].replace('m²','').replace(' ',''))
+    if type(my_dict)==dict:
+        my_list = [i for i in my_dict.values() if i.endswith('m²')]
         
+        if len(my_list) > 0:
+            result = float(my_list[0].replace('m²','').replace(' ',''))
+        else:
+            result = None
     return result
 
 #----------------------------------------------------------------------------------------------
@@ -118,14 +126,17 @@ def scrape_area(url):
 def scrape_room_count(url):
     
     #This function helps us to get value of room_count
-    #It returns integer normallu, else zero
+    #It returns integer normally, None if there is not any data, and zero if there are any problems
     
     result = 0
     my_dict = scrape_base_data(url)
     
-    if 'Otaq sayı' in my_dict.keys():
-        result = int(my_dict['Otaq sayı'])
-        
+    if type(my_dict)==dict:
+        if 'Otaq sayı' in my_dict.keys():
+            result = int(my_dict['Otaq sayı'])
+        else:
+            result = None
+            
     return result
 
 #----------------------------------------------------------------------------------------------
@@ -203,29 +214,172 @@ def scrape_cost(url):
 
 #----------------------------------------------------------------------------------------------
 
-def get_coordinates(url):
+def get_latitude(url):
     
-    #The function helps us to get estate coordinates on the map
-    #The function returns dict always
-    
-    coordinates = {}
+    #This function get value of latitude coordinate, if everything ok, it returns float
+    #Else error in list type
+ 
     ending = url[22:]
-    result = [ending, "##BUG##", "Coordinates_error-There are may be some unpredictable bugs"]
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content,features='html.parser')
+    coordinates = soup.find('div',attrs = {'id':'item_map'})
+    
+    if coordinates != None:
+        
+        try:
+            result = float(coordinates['data-lat'])
+            
+        except KeyError:
+            result = [ending, "##BUG##", "Coordinates_error-There are may be some unpredictable bugs"]
+            problem_list_id.append(result)
+    else:
+        result = [ending, "##BUG##", "Coordinates_error-There are may be some unpredictable bugs"]
+        problem_list_id.append(result)
+    
+    return result
+
+#----------------------------------------------------------------------------------------------
+
+def get_longitude(url):
+    
+    #This function get value of longitude coordinate, if everything ok, it returns float
+    #Else error in list type
+    
+    ending = url[22:]
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content,features='html.parser')
+    coordinates = soup.find('div',attrs = {'id':'item_map'})
+    
+    if coordinates != None:
+        
+        try:
+            result = float(coordinates['data-lng'])
+            
+        except KeyError:
+            result = [ending, "##BUG##", "Coordinates_error-There are may be some unpredictable bugs"]
+            problem_list_id.append(result)
+    else:
+        result = [ending, "##BUG##", "Coordinates_error-There are may be some unpredictable bugs"]
+        problem_list_id.append(result)
+    
+    return result
+
+#----------------------------------------------------------------------------------------------
+
+def scrape_announcement_category(url):
+    
+    #This function helps us to determine type of announcement  about For sale, for rent montly or 
+    #for rent daily
+    #The function accept a str which is determine full url of  the page
+    #If everything is ok the function returns str, else list
     
     page = requests.get(url)
     soup = BeautifulSoup(page.content,features='html.parser')
+    ending = url[22:]
+    category = []
+    result = []
     
-    long = soup.find('div',attrs = {'id':'item_map'})['data-lng']
-    lat = soup.find('div',attrs = {'id':'item_map'})['data-lat']
-    
-    coordinates['Longitude'] = float(long)
-    coordinates['Latitude'] = float(lat)
-    
-    if len(coordinates) == 2:
-        result = coordinates
+    try:
+        h3 = soup.find('h3',attrs={'class':'type'})
         
-    problem_list_id.append(result)
-    
+        try:
+            category = h3.find('a').text
+            if category == 'Satış':
+                result = 3
+                
+            #There are may be 2 type of rent categories, daily rent and monthly rent, both of them startswith
+            #the 'Kirayə', so we must to seperate it from each other
+            
+            elif category == 'Kirayə':
+                span = soup.find('span', attrs={'class':'price-per'})
+
+                if span.text =='/gün':
+                    #category = 'Kirayə - Günlük'
+                    result = 2
+                elif span.text =='/ay':
+                    #category = 'Kirayə - Aylıq'
+                    result = 1
+                else:                
+                    result = [ending, "##BUG##",
+                                        """Category_Problem, (Satış, Kirayə - Günlük, Kirayə - Aylıq)
+                                        Elan tipi solda sadalanan 3 ündən biri olmaldır""" ]
+                    problem_list_id.append(result)
+
+        except AttributeError:
+            result = [ending, "##BUG##", """AttributeError, Parent tegi class='type' h3 
+                                            tegi olan a tegi tapılmadı"""]      
+            problem_list_id.append(result)
+            
+    except AttributeError:
+        result = [ending, "##BUG##", "AttributeError, class=type olan h3 teg-i tapılmadı"]
+        problem_list_id.append(result)
+
     return result
+
+#----------------------------------------------------------------------------------------------
+
+def get_sub_type_adv(url):
+    
+    #This function helps us to appoint type of building or item
+    
+    sub_type = scrape_base_data(url)
+    ending = url[22:]
+    result = [ending, '##BUG##', 'There some unpredictable bugs']
+    
+    if 'Kateqoriya' in sub_type.keys():
+        
+        #By variable named result_dict we want to adapt our data into
+        #ADVERTISEMENT_SUB_TYPE_CHOICES, because class_field accept integer data
+        result_dict = {'Köhnə tikili': 1,
+                        'Yeni tikili': 2,
+                        'Ev / Villa': 3,
+                        'Bağ': 4,
+                        'Ofis': 5,
+                        'Qaraj': 6,
+                        'Obyekt': 7,
+                        'Torpaq': 8}
+        
+        element = sub_type['Kateqoriya']
+        result = result_dict[element]
+        
+    return result
+
+#----------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------------------------------
+
 
 #----------------------------------------------------------------------------------------------

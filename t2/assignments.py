@@ -5,15 +5,16 @@ ADVERTISEMENT_TYPE_CHOICES = (
 )
 
 ADVERTISEMENT_SUB_TYPE_CHOICES = (
-  (1, 'land'),
-  (2, 'flat'),
+  (1, 'flat old constructed'),
+  (2, 'flat new constructed'),
   (3, 'home / villa'),
   (4, 'garden'),
   (5, 'office'),
   (6, 'garage'),
   (7, 'object building'),
-  (8, 'another'),
-  (9, ''),
+  (8, 'land'),
+  (9, 'another'),
+
   
 )
 
