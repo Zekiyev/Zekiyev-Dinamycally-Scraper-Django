@@ -16,38 +16,31 @@ deleted_or_old_list_id = []
 
 #----------------------------------------------------------------------------------------------
 
-def month_converter(x):
+def month_converter(month_val):
     
     ##This function helps us to convert month from number format into letter format
     ##The function accepts only 1 argument, which is str and it returns str also
     
-    result = 'Error_Month'
+    result = month_val
     
-    if x == '01':
-        result = 'Yanvar'
-    elif x == '02':
-        result = 'Fevral'
-    elif x == '03':
-        result = 'Mart'
-    elif x == '04':
-        result = 'Aprel'
-    elif x == '05':
-        result = 'May'
-    elif x == '06':
-        result = 'Iyun'
-    elif x == '07':
-        result = 'Iyul'
-    elif x == '08':
-        result = 'Avqust'
-    elif x == '09':
-        result = 'Sentyabr'
-    elif x == '10':
-        result = 'Oktyabr'
-    elif x == '11':
-        result = 'Noyabr'
-    elif x == '12':
-        result = 'Dekabr'
-
+    month_dict = {
+                    '01': 'January', 'Yanvar':'January',
+                    '02': 'February', 'Fevral':'February',
+                    '03': 'March', 'Mart':'March',
+                    '04': 'April', 'Aprel':'April',
+                    '05': 'May', 'May':'May',
+                    '06': 'June', 'İyun':'June', 'Iyun':'June',
+                    '07': 'July', 'İyun':'July', 'Iyul':'July',
+                    '08': 'Auqust', 'Avqust': 'Auqust',
+                    '09': 'September', 'Sentyabr':'September',
+                    '10': 'Oktober', 'Oktraybr':'Oktober',
+                    '11': 'November', 'Noyabr':'November',
+                    '12': 'December', 'Dekabr':'December',
+    }
+    
+    if month_val in month_dict.keys():
+        result = month_dict[month_val]
+        
     return result
 
 #----------------------------------------------------------------------------------------------
@@ -408,7 +401,7 @@ def get_have_govern_deed(soup, url):
             result = answer_dict[deed_value]
             
         else:
-            result = None
+            result = False
     else:
         problem_list_id.append(result)
         
@@ -433,7 +426,7 @@ def get_mortgage_support(soup, url):
             result = answer_dict[mortgage_val]
             
         else:
-            result = None
+            result = False
     else:
         problem_list_id.append(result)
             
@@ -485,7 +478,7 @@ def scrape_description(soup, url):
 
 #----------------------------------------------------------------------------------------------
 
-def scrape_pub_date(soup ,url):
+def scrape_pub_date(soup, url):
     
     #This function helps us to get publishing date or updated date of item in page
     #It returns str in normal cases, else dict
@@ -521,15 +514,27 @@ def scrape_pub_date(soup ,url):
                 if 'Dünən' in value_pub:
                     gun = str(today_date.day -1)
                     my_date = (gun + ' ' + ay + ' ' + il).replace(' ','-')
-                    result = my_date
+                    result_list = my_date.split('-')
+                    result_list[1] = month_converter(result_list[1])
+                    result_str = '-'.join(result_list)
+                    result = datetime.strptime(result_str, '%d-%B-%Y')
+
 
                 elif 'Bugün' in value_pub:
                     gun = str(today_date.day)
                     my_date = (gun + ' ' + ay + ' ' + il).replace(' ','-')
-                    result = my_date
+                    result_list = my_date.split('-')
+                    result_list[1] = month_converter(result_list[1])
+                    result_str = '-'.join(result_list)
+                    result = datetime.strptime(result_str, '%d-%B-%Y')
 
                 else:
-                    result = value_pub[1:-1].replace(' ','-')
+                    my_date = value_pub[1:-1].replace(' ','-')
+                    result_list = my_date.split('-')
+                    result_list[1] = month_converter(result_list[1])
+                    result_str = '-'.join(result_list)
+                    result = datetime.strptime(result_str, '%d-%B-%Y')
+
     else:
         result = [ending, "##BUG##", "attrs = {'class':'item_info'}) atributlu div tegi tapılmadı"]
         problem_list_id.append(result)

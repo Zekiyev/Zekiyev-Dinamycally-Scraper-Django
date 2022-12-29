@@ -63,7 +63,7 @@ def upload_advertisements(request):
                 view_count=None,
                 
                 advertisement_create_date=scrape_pub_date(soup, i) if 
-                type(scrape_pub_date(soup, i))==str else None,
+                type(scrape_pub_date(soup, i))!=list else None,
                 
                 advertisement_expire_date=None,
                 advertisement_deleted_date=None,

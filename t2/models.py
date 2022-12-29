@@ -55,7 +55,7 @@ class Advertisements(BaseModel):
     view_count = models.BigIntegerField(blank=True,null=True)
     #advertisement_create_date = models.DateTimeField(blank=True, null=True)
     
-    advertisement_create_date = models.DateField(blank=True, null=True)
+    advertisement_create_date = models.DateTimeField(blank=True, null=True)
     advertisement_expire_date = models.DateTimeField(blank=True, null=True)
     advertisement_deleted_date = models.DateTimeField(blank=True, null=True)
     
