@@ -570,7 +570,19 @@ def get_adress_text(soup, url):
     return result
 
 #----------------------------------------------------------------------------------------------
-
+def get_all_city_list(url):
+    
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content,features='html.parser')
+    
+    result = []
+    a_tag_list = soup.find_all('a',attrs={'class':'footer__locations-i bz-d-flex'})
+    
+    if len(a_tag_list) != []:
+        city_list = [city.text for city in a_tag_list]
+        result = city_list
+        
+    return result
 
 #----------------------------------------------------------------------------------------------
 

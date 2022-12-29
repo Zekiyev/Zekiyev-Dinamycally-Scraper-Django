@@ -8,12 +8,27 @@ from .utils import (test_parce_conditions, scrape_base_data, scrape_land_area, s
                     problem_list_id, get_id, get_latitude, get_longitude, get_building_type,
                     scrape_announcement_category, get_have_govern_deed, get_mortgage_support, 
                     get_stage_datas, scrape_description, scrape_pub_date, get_adress_text, 
+                    get_all_city_list, 
                     )
 
-from .models import Advertisements
+from .models import Advertisements, City
 
 # Create your views here.
 
+def upload_cities(request):
+    
+    responce = JsonResponse({'status':400})
+    
+    if get_all_city_list('https://bina.az/') != []:
+        city_list = get_all_city_list('https://bina.az/')
+        
+        for city in city_list:
+            City.objects.get_or_create(name=city)
+        responce = JsonResponse({'status':200})
+        
+    return responce
+
+    
 
 def upload_advertisements(request):
     url_list = generate_url_list(3159424,3159440)

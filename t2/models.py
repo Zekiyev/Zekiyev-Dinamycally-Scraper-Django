@@ -1,10 +1,14 @@
 from django.db import models
 import uuid
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.utils import timezone
 
-from .assignments import (ADVERTISEMENT_TYPE_CHOICES, #ADVERTISEMENT_SUB_TYPE_CHOICES, 
+from .managers import CustomUserManager
+
+from .constants import (ADVERTISEMENT_TYPE_CHOICES, #ADVERTISEMENT_SUB_TYPE_CHOICES, 
                           BUILDING_TYPE_CHOICES, ADVERTISEMENT_VIP_TYPE_CHOICES, 
                           ADMIN_CONFIRMATION_STATUS_CHOICES, ADVERTISEMENT_VIP_TYPE_CHOICES,
-                          )
+                          USER_TYPE_CHOICES,)
 
 # Create your models here.
 
@@ -16,6 +20,48 @@ class BaseModel(models.Model):
 	class Meta:
 		abstract = True
 
+
+class City(BaseModel):
+    name = models.CharField("City", max_length=255)
+    
+    def __str__(self):
+        return self.name
+    
+class Region(models.Model):
+    name = models.CharField("Region", max_length=255)
+    #city_id_for_rel = models.BigIntegerField(choices='', null=True, blank=True)
+        
+    def __str__(self):
+        return self.name
+
+class Township(models.Model):
+    name = models.CharField("Township", max_length=255)
+    #rel_region = models.ForeignKey("Township", on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.name
+
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    
+    email = models.EmailField('email address', unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    company_name = models.CharField("company", max_length=255,null=True,blank=True)
+    person_in_charge = models.CharField("person_in_charge",max_length=255)
+    phone_number = models.CharField("phone_number", max_length=255,unique=True)
+    user_type = models.BigIntegerField(choices=USER_TYPE_CHOICES,default=4)
+    role = models.TextField("role",null=True,blank=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['phone_number']
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.email
 
 
 class Advertisements(BaseModel):

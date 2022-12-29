@@ -58,3 +58,12 @@ ADMIN_CONFIRMATION_STATUS_CHOICES = (
   (10, '##BUG##'),
 
 )
+
+USER_TYPE_CHOICES = (
+      (1, 'normal_seller'),
+      (2, 'rieltor'),
+      (3, 'agency'),
+      (4, 'fake_user'),
+      (5, 'another'),
+      (10, '##BUG##'),
+    )
