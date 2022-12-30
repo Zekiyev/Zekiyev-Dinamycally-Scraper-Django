@@ -52,10 +52,10 @@ def test_parce_conditions(soup, url):
     #If it returns 0, it says that we can continue scraping operation, else we have to skip scraping
     #operations
     
-    #0 - It means, everything is ok and we can scrape
+    #'OK' - It means, everything is ok and we can scrape
     
     ending = url[22:]
-    result = 0
+    result = 'OK'
         
     #searching data in tags with specific attributes
     
@@ -359,7 +359,7 @@ def get_building_type(soup, url):
     building_type = scrape_base_data(soup, url)
     ending = url[22:]
     error_msg = [ending, '##BUG##', 'There some unpredictable bugs']
-    result = 10
+    result = 0
     
     if 'Kateqoriya' in building_type.keys():
         
@@ -570,30 +570,63 @@ def get_adress_text(soup, url):
     return result
 
 #----------------------------------------------------------------------------------------------
-def get_all_city_list(url):
+
+def get_city_region_township_names():
     
-    page = requests.get(url)
+    page = requests.get('https://bina.az/')
     soup = BeautifulSoup(page.content,features='html.parser')
+    a_list = soup.find_all('a',attrs={'class':'footer__locations-i bz-d-flex'})
+
+    city_dict = {}
+    region_dict = {}
+    township_dict ={}
+    township_list = []
+    region_list = []
+    city_list = []
     
-    result = []
-    a_tag_list = soup.find_all('a',attrs={'class':'footer__locations-i bz-d-flex'})
-    
-    if len(a_tag_list) != []:
-        city_list = [city.text for city in a_tag_list]
-        result = city_list
+    if a_list != []:
         
-    return result
+        for i in a_list:
+
+            try:
+                href_index = i.prettify().index('href=')
+                target_index = i.prettify().index('target="')
+                new_value = i.prettify()[href_index+7:target_index].replace('"','')
+                new_list = new_value.split('/')
+
+                if new_value.count('/')==0:
+                    city_list.append(new_list[0].replace(' ',''))
+                    city_dict = {'city':city_list}
+
+                elif new_value.count('/')==1:
+                    region_list.append(new_list[1].replace(' ',''))
+                    region_dict = {'region':[new_list[0].replace(' ',''), region_list]}
+
+                elif new_value.count('/')==2:
+                    region_list.append(new_list[1].replace(' ',''))
+                    township_list.append(new_list[2].replace(' ',''))
+                    township_dict = {'township':[new_list[1].replace(' ',''), township_list]}
+                
+            except ValueError:
+                continue
+        
+    return (city_dict, region_dict, township_dict)
 
 #----------------------------------------------------------------------------------------------
-
-
+#def generate_city_choice(any_queryset):
+#    
+#    city_list = [city.name for city in any_queryset]
+#    result = [(0 ,'##BUG##')]
+#    
+#    for number, city in enumerate(any_queryset, 1):
+#        
+#        my_tuple = (number, city.name)
+#        result.append(my_tuple)
+#    
+#    return result
+    
 #----------------------------------------------------------------------------------------------
 
-
-#----------------------------------------------------------------------------------------------
-
-
-#----------------------------------------------------------------------------------------------
 
 
 #----------------------------------------------------------------------------------------------

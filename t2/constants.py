@@ -1,8 +1,9 @@
+
 ADVERTISEMENT_TYPE_CHOICES = (
   (1, 'monthly rent'),
   (2, 'daily rent'),
   (3, 'sale'),
-  (10, '##BUG##')
+  (0, '##BUG##')
 )
 
 #ADVERTISEMENT_SUB_TYPE_CHOICES = (
@@ -15,7 +16,7 @@ ADVERTISEMENT_TYPE_CHOICES = (
 #  (7, 'object building'),
 #  (8, 'land'),
 #  (9, 'another'),
-#  (10, '##BUG##'),
+#  (0, '##BUG##'),
 #
 #)
 #
@@ -24,7 +25,7 @@ ADVERTISEMENT_TYPE_CHOICES = (
 #  (2, 'old constructed building'),
 #  (3, 'business center'),
 #  (4, 'other'),
-#  (10, '##BUG##')
+#  (0, '##BUG##')
 #)
 #
 ADVERTISEMENT_VIP_TYPE_CHOICES = (
@@ -32,7 +33,7 @@ ADVERTISEMENT_VIP_TYPE_CHOICES = (
   (2, 'upper'),
   (3, 'vip'),
   (4, 'premium'),
-  (10, '##BUG##')
+  (0, '##BUG##')
 )
 
 BUILDING_TYPE_CHOICES = (
@@ -45,7 +46,7 @@ BUILDING_TYPE_CHOICES = (
   (7, 'object building'),
   (8, 'land'),
   (9, 'another'),
-  (10, '##BUG##'),
+  (0, '##BUG##'),
 
 )
 
@@ -55,7 +56,7 @@ ADMIN_CONFIRMATION_STATUS_CHOICES = (
   (2, 'admin confirm'),
   (3, 'expired'),
   (4, 'other'),
-  (10, '##BUG##'),
+  (0, '##BUG##'),
 
 )
 
@@ -65,5 +66,6 @@ USER_TYPE_CHOICES = (
       (3, 'agency'),
       (4, 'fake_user'),
       (5, 'another'),
-      (10, '##BUG##'),
+      (0, '##BUG##'),
     )
+

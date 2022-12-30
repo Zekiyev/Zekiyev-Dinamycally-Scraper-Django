@@ -1,34 +1,70 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from bs4 import BeautifulSoup
 import requests
+
 
 from .utils import (test_parce_conditions, scrape_base_data, scrape_land_area, scrape_area,
                     scrape_room_count, generate_url_list, scrape_cost, deleted_or_old_list_id,
                     problem_list_id, get_id, get_latitude, get_longitude, get_building_type,
                     scrape_announcement_category, get_have_govern_deed, get_mortgage_support, 
                     get_stage_datas, scrape_description, scrape_pub_date, get_adress_text, 
-                    get_all_city_list, 
+                    get_city_region_township_names,
                     )
 
-from .models import Advertisements, City
+from .models import Advertisements, City, Region, Township
 
 # Create your views here.
 
 def upload_cities(request):
-    
     responce = JsonResponse({'status':400})
-    
-    if get_all_city_list('https://bina.az/') != []:
-        city_list = get_all_city_list('https://bina.az/')
+    answer = get_city_region_township_names()[0]
+    if answer != {}:
+        city_list = answer['city']
         
         for city in city_list:
             City.objects.get_or_create(name=city)
         responce = JsonResponse({'status':200})
-        
+    
     return responce
 
+
+def upload_regions(request):
     
+    responce = JsonResponse({'status':400})
+    answer_region = get_city_region_township_names()
+    if answer_region[1] != {}:
+
+        for region in answer_region[1]['region'][1]:
+            parent=City.objects.get(name=answer_region[1]['region'][0])
+            #parent = City.objects.filter(name=region)
+            Region.objects.get_or_create(name=region,
+                                         city_for_rel=parent)
+        
+        responce = JsonResponse({'status':200})
+        
+    return responce
+        
+
+def upload_township(request):
+
+    responce = JsonResponse({'status':400})
+    answer_township = get_city_region_township_names()
+    
+    
+    if answer_township[2] != {}:
+        try:
+            for township in answer_township[2]['township'][1]:
+                parent = Region.objects.get(name=answer_township[2]['township'][0])
+                Township.objects.get_or_create(name=township,
+                                            region_for_rel=parent),
+                
+            responce = JsonResponse({'status':200})
+        except KeyError:
+            responce = JsonResponse({'status':'KeyError'})
+    return responce
+
+
 
 def upload_advertisements(request):
     url_list = generate_url_list(3159424,3159440)
@@ -39,7 +75,7 @@ def upload_advertisements(request):
         soup = BeautifulSoup(page.content,features='html.parser')
 
         answer = test_parce_conditions(soup, i)
-        if answer !=0:
+        if answer != 'OK':
             deleted_or_old_list_id.append(i)
             continue
         
@@ -60,7 +96,7 @@ def upload_advertisements(request):
                 type(get_longitude(soup, i))==float else 0,
                 
                 type=scrape_announcement_category(soup, i) if 
-                type(scrape_announcement_category(soup, i))==int else 10,
+                type(scrape_announcement_category(soup, i))==int else 0,
                 #sub_type=?
                 
                 have_government_deed=get_have_govern_deed(soup, i) if 

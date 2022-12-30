@@ -21,22 +21,23 @@ class BaseModel(models.Model):
 		abstract = True
 
 
-class City(BaseModel):
-    name = models.CharField("City", max_length=255)
+class City(models.Model):
+    name = models.CharField(max_length=255)
     
     def __str__(self):
         return self.name
     
 class Region(models.Model):
-    name = models.CharField("Region", max_length=255)
-    #city_id_for_rel = models.BigIntegerField(choices='', null=True, blank=True)
+    name = models.CharField(max_length=255)
+    city_for_rel = models.ForeignKey(City, null=True, blank=True, on_delete=models.CASCADE)
         
     def __str__(self):
         return self.name
 
+
 class Township(models.Model):
     name = models.CharField("Township", max_length=255)
-    #rel_region = models.ForeignKey("Township", on_delete=models.CASCADE)
+    region_for_rel = models.ForeignKey(Region, null=True, blank=True, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.name
@@ -136,3 +137,5 @@ class Advertisements(BaseModel):
 
 #)I added a field which called name, to show object in admin, look at name field
 
+
+    
